@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "serve -s dist",
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
@@ -13,7 +14,8 @@
     "lucide-react": "^1.43.0",
     "pdfjs-dist": "^6.3.289",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "serve": "^14.2.6"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",
