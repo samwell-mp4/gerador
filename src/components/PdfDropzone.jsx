@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { UploadCloud, FileText, CheckCircle2, Loader2, Sparkles, RefreshCw } from 'lucide-react';
 
-export default function PdfDropzone({ onFileSelected, onSampleLoad, isLoading, currentFileName }) {
+export default function PdfDropzone({ onFileSelected, onSampleLoad, onTextPasted, isLoading, currentFileName }) {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -112,6 +112,26 @@ export default function PdfDropzone({ onFileSelected, onSampleLoad, isLoading, c
           </div>
         )}
       </div>
+
+      {/* Opção para colar texto */}
+      {!isLoading && !currentFileName && (
+        <div className="mt-6 border-t border-zinc-800/80 pt-6 max-w-2xl mx-auto">
+          <p className="text-sm font-semibold text-zinc-300 mb-3 text-center">Ou cole o texto do Cartão CNPJ abaixo:</p>
+          <textarea
+            rows="4"
+            className="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-4 text-xs text-zinc-300 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all font-mono"
+            placeholder="Exemplo: NÚMERO DE INSCRIÇÃO 64.718.569/0001-70 MATRIZ..."
+            onChange={(e) => {
+              if (e.target.value.trim().length > 50) {
+                if (window.confirm("Deseja extrair os dados deste texto colado?")) {
+                  onTextPasted(e.target.value);
+                  e.target.value = '';
+                }
+              }
+            }}
+          ></textarea>
+        </div>
+      )}
 
       {/* Botão para carregar dados de exemplo (Demo) */}
       {!isLoading && (

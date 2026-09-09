@@ -3,6 +3,7 @@ import PdfDropzone from './components/PdfDropzone';
 import CompanyForm from './components/CompanyForm';
 import PagePreview from './components/PagePreview';
 import { extractTextFromPdf } from './utils/pdfReader';
+import { parseCnpjText } from './utils/cnpjExtractor';
 import { generateInstitutionalHtml } from './utils/htmlGenerator';
 import { SAMPLE_COMPANY_DATA } from './utils/sampleData';
 import { Sparkles, FileCode, CheckCircle2, ArrowLeft } from 'lucide-react';
@@ -56,6 +57,27 @@ export default function App() {
       console.error('Erro ao ler PDF:', err);
       alert('Não foi possível extrair o texto deste arquivo PDF. Verifique se é um Cartão CNPJ válido ou preencha os dados manualmente.');
       setActiveStep('form');
+    } finally {
+      setIsLoadingPdf(false);
+    }
+  };
+
+  // Extração de texto colado diretamente
+  const handleTextPasted = (text) => {
+    setIsLoadingPdf(true);
+    try {
+      const data = parseCnpjText(text);
+      setFileName('Texto Colado');
+      setFormData(prev => ({
+        ...prev,
+        ...data,
+        cnaePrincipal: data.cnaePrincipal?.codigo || data.cnaePrincipal?.descricao ? data.cnaePrincipal : prev.cnaePrincipal,
+        cnaesSecundarios: Array.isArray(data.cnaesSecundarios) && data.cnaesSecundarios.length > 0 ? data.cnaesSecundarios : prev.cnaesSecundarios
+      }));
+      setActiveStep('form');
+    } catch (err) {
+      console.error('Erro ao processar texto:', err);
+      alert('Não foi possível extrair os dados do texto. Verifique o formato.');
     } finally {
       setIsLoadingPdf(false);
     }
@@ -153,6 +175,7 @@ export default function App() {
               currentFileName={fileName}
               onFileSelected={handleFileSelected}
               onSampleLoad={handleSampleLoad}
+              onTextPasted={handleTextPasted}
             />
 
             <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8 border-t border-zinc-900">
